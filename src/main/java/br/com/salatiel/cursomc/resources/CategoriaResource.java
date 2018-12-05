@@ -1,8 +1,15 @@
 package br.com.salatiel.cursomc.resources;
 
+
+
+import java.util.List;
+import java.util.ArrayList;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import br.com.salatiel.cursomc.domain.Categoria;
 
 //Anotações
 @RestController
@@ -10,8 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoriaResource {
 	
 	@RequestMapping(method=RequestMethod.GET) //VERBO HTTP(EX: get - usar o correto para cada operação)
-	public String listar() {
-		return "Rest está funcionando";
+	public List<Categoria> listar() {
+		
+		Categoria cat1 = new Categoria(1, "Informática");
+		Categoria cat2 = new Categoria(2, "Escritório");
+		
+		List<Categoria> lista = new ArrayList<>();
+		lista.add(cat1);
+		lista.add(cat2);
+		
+	
+		return lista;
 	}
 	
 }
