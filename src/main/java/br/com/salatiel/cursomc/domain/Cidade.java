@@ -1,41 +1,42 @@
 package br.com.salatiel.cursomc.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
-public class Categoria implements Serializable {
-
+public class Cidade implements Serializable{
+	
 	private static final long serialVersionUID = 1L;
-
-	// Estrategia de geração automatica dos IDs das Categorias
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String nome;
+	
+	//Cidade tem apenas 1 estado, portando nao utilizaremos List
+	@ManyToOne
+	@JoinColumn(name = "estado_id") //Nome chave estrangeira 
+	private Estado estado;
 
-	@JsonManagedReference // Fazer no lado que voce deseja que venha os objetos associados
-	@ManyToMany(mappedBy = "categorias")
-	private List<Produto> produtos = new ArrayList<>();
-
-	public Categoria() {
-
+	public Cidade() {
+		super();
 	}
+	
+	
 
-	public Categoria(Integer id, String nome) {
+	public Cidade(Integer id, String nome, Estado estado) {
 		super();
 		this.id = id;
 		this.nome = nome;
+		this.estado = estado;
 	}
+
 
 	public Integer getId() {
 		return id;
@@ -53,12 +54,12 @@ public class Categoria implements Serializable {
 		this.nome = nome;
 	}
 
-	public List<Produto> getProdutos() {
-		return produtos;
+	public Estado getEstado() {
+		return estado;
 	}
 
-	public void setProdutos(List<Produto> produtos) {
-		this.produtos = produtos;
+	public void setEstado(Estado estado) {
+		this.estado = estado;
 	}
 
 	@Override
@@ -77,7 +78,7 @@ public class Categoria implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Categoria other = (Categoria) obj;
+		Cidade other = (Cidade) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -85,5 +86,8 @@ public class Categoria implements Serializable {
 			return false;
 		return true;
 	}
-
+	
+	
+	
+	
 }
