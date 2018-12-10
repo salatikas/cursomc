@@ -1,5 +1,6 @@
 package br.com.salatiel.cursomc;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,20 @@ import br.com.salatiel.cursomc.domain.Cidade;
 import br.com.salatiel.cursomc.domain.Cliente;
 import br.com.salatiel.cursomc.domain.Endereco;
 import br.com.salatiel.cursomc.domain.Estado;
+import br.com.salatiel.cursomc.domain.Pagamento;
+import br.com.salatiel.cursomc.domain.PagamentoComBoleto;
+import br.com.salatiel.cursomc.domain.PagamentoComCartao;
+import br.com.salatiel.cursomc.domain.Pedido;
 import br.com.salatiel.cursomc.domain.Produto;
+import br.com.salatiel.cursomc.domain.enums.EstadoPagamento;
 import br.com.salatiel.cursomc.domain.enums.TipoCliente;
 import br.com.salatiel.cursomc.repositories.CategoriaRepository;
 import br.com.salatiel.cursomc.repositories.CidadeRepository;
 import br.com.salatiel.cursomc.repositories.ClienteRepository;
 import br.com.salatiel.cursomc.repositories.EnderecoRepository;
 import br.com.salatiel.cursomc.repositories.EstadoRepository;
+import br.com.salatiel.cursomc.repositories.PagamentoRepository;
+import br.com.salatiel.cursomc.repositories.PedidoRepository;
 import br.com.salatiel.cursomc.repositories.ProdutoRepository;
 
 @SpringBootApplication
@@ -41,6 +49,10 @@ public class CursomcApplication implements CommandLineRunner {
 	private ClienteRepository clienteRepository;
 	@Autowired
 	private EnderecoRepository enderecoRepository;
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	@Autowired
+	private PagamentoRepository pagamentoRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(CursomcApplication.class, args);
@@ -103,11 +115,30 @@ public class CursomcApplication implements CommandLineRunner {
 
 		// Atribuir endereço ao cliente
 		cli1.getEnderecos().addAll(Arrays.asList(e1, e2));
-		
-		//Salvando Clientes e Enderecos no BD
-		//Sempre salvar primeiro quem é independente
+
+		// Salvando Clientes e Enderecos no BD
+		// Sempre salvar primeiro quem é independente
 		clienteRepository.saveAll(Arrays.asList(cli1));
 		enderecoRepository.saveAll(Arrays.asList(e1, e2));
+
+		// INSTANCIAR PEDIDOS E PAGAMENTOS
+		// Mascara de formação para data
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		Pedido ped1 = new Pedido(null, sdf.parse("30/09/2017 10:32"), cli1, e1);
+		Pedido ped2 = new Pedido(null, sdf.parse("10/10/2017 19:35"), cli1, e2);
+		
+		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6);
+		ped1.setPagamento(pagto1);
+		SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy");
+		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf2.parse("20/10/2017"), null);
+		ped2.setPagamento(pagto2);
+		
+		//Associar os pedidos ao cliente
+		cli1.getPedidos().addAll(Arrays.asList(ped1,ped2));
+		
+		//Salvar pedidos e pagamentos
+		pedidoRepository.saveAll(Arrays.asList(ped1,ped2));
+		pagamentoRepository.saveAll(Arrays.asList(pagto1,pagto2));
 
 	}
 }

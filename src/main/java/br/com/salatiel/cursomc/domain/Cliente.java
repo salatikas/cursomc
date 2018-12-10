@@ -21,27 +21,32 @@ import br.com.salatiel.cursomc.domain.enums.TipoCliente;
 @Entity
 public class Cliente implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String nome;
 	private String email;
 	private String cpfOuCnjp;
-	/*Internamente será armazenado como uma Nº Inteiro, porém para o mundo externo a classe vai retornar 
-	 * um valor TipoCliente*/
-	private Integer tipo; 
-	
+	/*
+	 * Internamente será armazenado como uma Nº Inteiro, porém para o mundo externo
+	 * a classe vai retornar um valor TipoCliente
+	 */
+	private Integer tipo;
+
 	@JsonManagedReference
 	// 1 Cliente tem varios endereços
 	@OneToMany(mappedBy = "cliente")
 	private List<Endereco> enderecos = new ArrayList<>();
-	
-	//Conjunto de Strings para armazenar o TELEFONE, Set não permite repetição
+
+	// Conjunto de Strings para armazenar o TELEFONE, Set não permite repetição
 	@ElementCollection
 	@CollectionTable(name = "TELEFONE")
 	private Set<String> telefones = new HashSet<>();
-	
+
+	@OneToMany(mappedBy = "cliente")
+	private List<Pedido> pedidos = new ArrayList<>();
+
 	public Cliente() {
 		super();
 	}
@@ -88,7 +93,7 @@ public class Cliente implements Serializable {
 	}
 
 	public TipoCliente getTipo() {
-		return TipoCliente.toEnum(tipo);//RETORNAR UM DADO TIPO CLIENTE PARA O MUNDO EXTERNO
+		return TipoCliente.toEnum(tipo);// RETORNAR UM DADO TIPO CLIENTE PARA O MUNDO EXTERNO
 	}
 
 	public void setTipo(TipoCliente tipo) {
@@ -102,8 +107,6 @@ public class Cliente implements Serializable {
 	public void setEnderecos(List<Endereco> enderecos) {
 		this.enderecos = enderecos;
 	}
-	
-	
 
 	public Set<String> getTelefones() {
 		return telefones;
@@ -111,6 +114,14 @@ public class Cliente implements Serializable {
 
 	public void setTelefones(Set<String> telefones) {
 		this.telefones = telefones;
+	}
+
+	public List<Pedido> getPedidos() {
+		return pedidos;
+	}
+
+	public void setPedidos(List<Pedido> pedidos) {
+		this.pedidos = pedidos;
 	}
 
 	@Override
