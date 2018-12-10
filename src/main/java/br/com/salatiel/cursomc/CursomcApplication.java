@@ -13,6 +13,7 @@ import br.com.salatiel.cursomc.domain.Cidade;
 import br.com.salatiel.cursomc.domain.Cliente;
 import br.com.salatiel.cursomc.domain.Endereco;
 import br.com.salatiel.cursomc.domain.Estado;
+import br.com.salatiel.cursomc.domain.ItemPedido;
 import br.com.salatiel.cursomc.domain.Pagamento;
 import br.com.salatiel.cursomc.domain.PagamentoComBoleto;
 import br.com.salatiel.cursomc.domain.PagamentoComCartao;
@@ -25,6 +26,7 @@ import br.com.salatiel.cursomc.repositories.CidadeRepository;
 import br.com.salatiel.cursomc.repositories.ClienteRepository;
 import br.com.salatiel.cursomc.repositories.EnderecoRepository;
 import br.com.salatiel.cursomc.repositories.EstadoRepository;
+import br.com.salatiel.cursomc.repositories.ItemPedidoRepository;
 import br.com.salatiel.cursomc.repositories.PagamentoRepository;
 import br.com.salatiel.cursomc.repositories.PedidoRepository;
 import br.com.salatiel.cursomc.repositories.ProdutoRepository;
@@ -53,7 +55,9 @@ public class CursomcApplication implements CommandLineRunner {
 	private PedidoRepository pedidoRepository;
 	@Autowired
 	private PagamentoRepository pagamentoRepository;
-
+	@Autowired
+	private ItemPedidoRepository itemPedidoRepository;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(CursomcApplication.class, args);
 	}
@@ -126,19 +130,37 @@ public class CursomcApplication implements CommandLineRunner {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 		Pedido ped1 = new Pedido(null, sdf.parse("30/09/2017 10:32"), cli1, e1);
 		Pedido ped2 = new Pedido(null, sdf.parse("10/10/2017 19:35"), cli1, e2);
-		
+
 		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6);
 		ped1.setPagamento(pagto1);
 		SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy");
 		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf2.parse("20/10/2017"), null);
 		ped2.setPagamento(pagto2);
-		
-		//Associar os pedidos ao cliente
-		cli1.getPedidos().addAll(Arrays.asList(ped1,ped2));
-		
-		//Salvar pedidos e pagamentos
-		pedidoRepository.saveAll(Arrays.asList(ped1,ped2));
-		pagamentoRepository.saveAll(Arrays.asList(pagto1,pagto2));
 
+		// Associar os pedidos ao cliente
+		cli1.getPedidos().addAll(Arrays.asList(ped1, ped2));
+
+		// Salvar pedidos e pagamentos
+		pedidoRepository.saveAll(Arrays.asList(ped1, ped2));
+		pagamentoRepository.saveAll(Arrays.asList(pagto1, pagto2));
+
+		// ITEM DE PEDIDO
+		ItemPedido ip1 = new ItemPedido(ped1, p1, 0.00, 1, 2000.00);
+		ItemPedido ip2 = new ItemPedido(ped1, p3, 0.00, 2, 80.00);
+		ItemPedido ip3 = new ItemPedido(ped2, p2, 100.00, 1, 800.00);
+		
+		//Associar os itens aos pedidos
+		ped1.getItens().addAll(Arrays.asList(ip1,ip2));
+		ped2.getItens().addAll(Arrays.asList(ip3));
+		
+		//Associar produtos aos itens de pedido
+		p1.getItens().addAll(Arrays.asList(ip1));
+		p2.getItens().addAll(Arrays.asList(ip3));
+		p3.getItens().addAll(Arrays.asList(ip2));
+		
+		//Salvar Itens do Pedido
+		itemPedidoRepository.saveAll(Arrays.asList(ip1,ip2,ip3));
+		
+		
 	}
 }
