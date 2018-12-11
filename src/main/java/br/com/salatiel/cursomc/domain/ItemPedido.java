@@ -5,41 +5,45 @@ import java.io.Serializable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-public class ItemPedido implements Serializable{
+public class ItemPedido implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	//O ID SERÁ DO TIPO DA CLASSE AUXILIAR
-	@EmbeddedId //ID EMBUTIDO EM UM TIPO AUXILIAR
+	// O ID SERÁ DO TIPO DA CLASSE AUXILIAR
+	@JsonIgnore
+	@EmbeddedId // ID EMBUTIDO EM UM TIPO AUXILIAR
 	private ItemPedidoPK id = new ItemPedidoPK();
-	
-	//CRIAR CHAVE COMPOSTA CONTENDO PRODUTO E PEDIDO
+
+	// CRIAR CHAVE COMPOSTA CONTENDO PRODUTO E PEDIDO
 	private Double desconto;
 	private Integer quantidade;
 	private Double preco;
-	
-	//AS ASSOCIAÇÕES JÁ FORAM FEITAS NA CLASSE"ItemPedidoPK"
-	
+
+	// AS ASSOCIAÇÕES JÁ FORAM FEITAS NA CLASSE"ItemPedidoPK"
+
 	public ItemPedido() {
 		super();
 	}
-	
-	//Trocar o itempedidoPk do construtor por pedido e produto
-	public ItemPedido(Pedido pedido,Produto produto, Double desconto, Integer quantidade, Double preco) {
+
+	// Trocar o itempedidoPk do construtor por pedido e produto
+	public ItemPedido(Pedido pedido, Produto produto, Double desconto, Integer quantidade, Double preco) {
 		super();
-		//atribuir pedido e produto para a variavel id
+		// atribuir pedido e produto para a variavel id
 		id.setPedido(pedido);
 		id.setProduto(produto);
 		this.desconto = desconto;
 		this.quantidade = quantidade;
 		this.preco = preco;
 	}
-	
-	//CRIAR GETTERS DO PEDIDO E PRODUTO
+
+	// CRIAR GETTERS DO PEDIDO E PRODUTO
+	@JsonIgnore
 	public Pedido getPedido() {
 		return id.getPedido();
 	}
-	
+
 	public Produto getProduto() {
 		return id.getProduto();
 	}
@@ -100,12 +104,5 @@ public class ItemPedido implements Serializable{
 			return false;
 		return true;
 	}
-	
-	
-	
-	
-	
-	
-	
 
 }
